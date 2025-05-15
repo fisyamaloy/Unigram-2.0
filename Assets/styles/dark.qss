@@ -1,0 +1,75 @@
+/* QDarkStyleSheet -----------------------------------------------------------
+See Qt documentation:
+  - https://doc.qt.io/qt-5/stylesheet.html
+  - https://doc.qt.io/qt-5/stylesheet-reference.html
+  - https://doc.qt.io/qt-5/stylesheet-examples.html
+--------------------------------------------------------------------------- */
+
+#TitleBarWidget {
+    background-color: #3d3d3d;
+    border-bottom: 1px solid red; /* Виден 100% */
+}
+
+#TitleBarWidget QPushButton {
+    background-color: transparent;
+    color: white;
+    border: none;
+}
+
+#TitleBarWidget QPushButton:hover {
+    background-color: #505050;
+}
+
+QWidget {
+    background-color: #2d2d2d;
+    color: #e0e0e0;             
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+}
+
+/* QPushButton ------------------------------------------------------------
+https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qpushbutton
+--------------------------------------------------------------------------- */
+QGroupBox > QPushButton,
+QPushButton {
+    background-color: #3c3c3c;  /* Средне-серый */
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    color: #e0e0e0;
+    font-size: 18px;
+}
+
+QPushButton:hover {
+    background-color: #4a4a4a;
+}
+
+QPushButton:pressed {
+    background-color: #5c5c5c;
+}
+
+/* Custom Button Styles */
+QPushButton[styleclass="calcButton"] { min-width: auto; }
+QPushButton[styleclass="autoWidth"] { min-width: auto; }
+
+/* Toggle Style: Used in Print dialogs for styling the orientation buttons */
+QPushButton[class="toggle"]:!checked { border: 1px solid #1E2023; background: #434343; min-width: auto;}
+QPushButton[class="toggle"]:checked { border: 1px solid #1E2023; background: #000; min-width: auto; }
+
+/* QLineEdit --------------------------------------------------------------
+https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qlineedit
+--------------------------------------------------------------------------- */
+QWidget > QGroupBox > QLineEdit,
+QLineEdit {
+    background-color: #1e1e1e;  /* Очень тёмный фон */
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 6px 10px;
+    color: #e0e0e0;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border: 1px solid #5a5a5a;
+}
+
