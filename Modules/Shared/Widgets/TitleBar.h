@@ -15,6 +15,10 @@ class TitleBarWidget : public QFrame {
 public:
     explicit TitleBarWidget(QWidget* parent = nullptr);
 
+signals:
+    void beginWindowMove(const QPoint& globalMousePos);
+    void windowMove(const QPoint& globalMousePos);
+
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;

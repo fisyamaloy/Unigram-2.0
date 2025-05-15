@@ -23,13 +23,13 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void leaveEvent(QEvent *event) override;
 
-    bool eventFilter(QObject *watched, QEvent *event) override;
-
 private:
     AuthModule authModule; 
     TitleBarWidget* pTitleBar;
 
+    bool m_moving = false;
     bool resizing = false;
+    QPoint m_dragOffset;
     QPoint dragStartPos;
     QRect originalGeometry;
 
@@ -48,5 +48,6 @@ private:
 
     ResizeRegion getResizeRegion(const QPoint &pos);
     void updateCursorShape(const QPoint &pos);
+    Qt::Edges MainWindow::resizeRegionToEdges(ResizeRegion region);
 };
 #endif // MAINWINDOW_H

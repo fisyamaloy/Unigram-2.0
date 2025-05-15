@@ -10,7 +10,7 @@
 #include <QRect>
 #include <qApplication>
 
-const int RESIZE_MARGIN = 10;
+const int RESIZE_MARGIN = 5;
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent), resizing(false)
@@ -35,44 +35,24 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    pAuthForm->installEventFilter(this); // Устанавливаем фильтр событий
-    pTitleBar->installEventFilter(this); // Устанавливаем фильтр событий
     pAuthForm->setMouseTracking(true);
     pTitleBar->setMouseTracking(true);
+
+    connect(pTitleBar, &TitleBarWidget::beginWindowMove, this, [this](const QPoint& globalPos) {
+        if (!resizing) {
+            m_dragOffset = globalPos - frameGeometry().topLeft();
+            m_moving = true;
+        }
+    });
+
+    connect(pTitleBar, &TitleBarWidget::windowMove, this, [this](const QPoint& globalPos) {
+        if (m_moving && !resizing) {
+            move(globalPos - m_dragOffset);
+        }
+    });
 }
 
 MainWindow::~MainWindow() {}
-
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-{
-    if (!event || !watched) return false;
-    
-    if (event->type() == QEvent::MouseMove ||
-        event->type() == QEvent::MouseButtonPress ||
-        event->type() == QEvent::MouseButtonRelease)
-    {
-        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        
-        if (watched == authModule.ui->widget()) {
-            QApplication::sendEvent(this, mouseEvent);
-            return true;
-        }
-        else if (watched == pTitleBar) {
-            QPoint pos = pTitleBar->mapFromGlobal(mouseEvent->globalPosition().toPoint());
-            
-            const int border = RESIZE_MARGIN;
-            bool isOnBorder = pos.x() <= border || pos.x() >= pTitleBar->width() - border ||
-                             pos.y() <= border || pos.y() >= pTitleBar->height() - border;
-            
-            if (isOnBorder || !(mouseEvent->buttons() & Qt::LeftButton)) {
-                //QApplication::sendEvent(this, mouseEvent);
-                return false;
-            }
-        }
-    }
-    
-    return QWidget::eventFilter(watched, event);
-}
 
 MainWindow::ResizeRegion MainWindow::getResizeRegion(const QPoint &pos)
 {
@@ -259,6 +239,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 originalGeometry.setBottom(newGeometry.bottom());
             }
         }
+
+        QPoint localPos = mapFromGlobal(globalPos);
+        updateCursorShape(localPos);
     }
     else
     {
@@ -276,9 +259,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
     if (event->button() == Qt::LeftButton) {
         resizing = false;
+        m_moving = false;
         resizeRegion = None;
     }
     QWidget::mouseReleaseEvent(event);

@@ -48,21 +48,20 @@ TitleBarWidget::TitleBarWidget(QWidget* parent)
 }
 
 void TitleBarWidget::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
-        m_dragPosition = event->globalPosition().toPoint() - parentWidget()->frameGeometry().topLeft();
-        event->accept();
-        //grabMouse();
-    }
     qDebug() << "TitleBar mousePressEvent\n";
+    if (event->button() == Qt::LeftButton) {
+        m_dragPosition = event->globalPosition().toPoint();
+        emit beginWindowMove(m_dragPosition);
+        event->accept();
+    }
     QFrame::mousePressEvent(event);
 }
 
 void TitleBarWidget::mouseMoveEvent(QMouseEvent* event) {
     if (event->buttons() & Qt::LeftButton) {
-        parentWidget()->move(event->globalPosition().toPoint() - m_dragPosition);
+        emit windowMove(event->globalPosition().toPoint());
         event->accept();
     }
-    qDebug() << "TitleBar mouseMoveEvent\n";
     QFrame::mouseMoveEvent(event);
 }
 
