@@ -1,8 +1,10 @@
 #ifndef MAINWINDOW_H
-#define MAINWINDOW_H
 
 #include <QWidget>
-#include <QMainWindow>
+#include <QPoint>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QMargins>
 #include <Modules/Auth/AuthModule.h>
 
 class TitleBarWidget;
@@ -12,7 +14,7 @@ class MainWindow : public QWidget
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 protected:
@@ -21,18 +23,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-    void leaveEvent(QEvent *event) override;
 
 private:
-    AuthModule authModule; 
-    TitleBarWidget* pTitleBar;
-
-    bool m_moving = false;
-    bool resizing = false;
-    QPoint m_dragOffset;
-    QPoint dragStartPos;
-    QRect originalGeometry;
-
     enum ResizeRegion {
         None,
         Left,
@@ -44,10 +36,19 @@ private:
         BottomLeft,
         BottomRight
     };
+
+    AuthModule authModule;
+    TitleBarWidget* pTitleBar = nullptr;
+
+    bool m_moving = false;
+    bool resizing = false;
+    QPoint m_dragOffset;
     ResizeRegion resizeRegion = None;
 
     ResizeRegion getResizeRegion(const QPoint &pos);
-    void updateCursorShape(const QPoint &pos);
-    Qt::Edges MainWindow::resizeRegionToEdges(ResizeRegion region);
+    void updateCursorShape(const QPoint &globalPos);
+    void updateCursorShapeByResizeRegion(ResizeRegion region);
+    Qt::Edges resizeRegionToEdges(ResizeRegion region);
 };
+
 #endif // MAINWINDOW_H
