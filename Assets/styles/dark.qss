@@ -7,7 +7,6 @@ See Qt documentation:
 
 #TitleBarWidget {
     background-color: #3d3d3d;
-    border-bottom: 1px solid red; /* Виден 100% */
 }
 
 #TitleBarWidget QPushButton {

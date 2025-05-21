@@ -1,62 +1,73 @@
 #include "MainWindow.h"
-#include "Modules/Auth/AuthModule.h"
-#include "Modules/Auth/Core/AuthFactory.h"
-#include "Modules/Auth/AuthModuleFactory.h"
-#include "Modules/Shared/Widgets/TitleBar.h"
 
-#include <QVBoxLayout>
-#include <QMouseEvent>
 #include <QCursor>
+#include <QMouseEvent>
+#include <QStackedWidget>
+#include <QVBoxLayout>
 #include <QWindow>
 
-const int RESIZE_MARGIN = 5;
+#include "Modules/Auth/AuthModule.h"
+#include "Modules/Auth/AuthModuleFactory.h"
+#include "Modules/Auth/Core/AuthFactory.h"
+#include "Modules/Shared/Widgets/TitleBar.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent), resizing(false)
+MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
+    m_pagesStack       = new QStackedWidget(this);
+    m_registrationPage = new RegistrationPage(this);
+
+    m_pagesStack->addWidget(m_registrationPage);
+
     setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
     setMouseTracking(true);
 
     auto pLayout = new QVBoxLayout(this);
     pLayout->setContentsMargins(0, 0, 0, 0);
 
-    pTitleBar = new TitleBarWidget(this);
-    pLayout->addWidget(pTitleBar);
+    m_titleBar = new TitleBarWidget(this);
+    pLayout->addWidget(m_titleBar);
 
     AuthType selected = AuthType::LOGIN_PASSWORD;
-    authModule = AuthModuleFactory::create(selected);
-    auto pAuthForm = authModule.ui->widget();
-    pLayout->addWidget(pAuthForm);
+    m_authModule      = AuthModuleFactory::create(selected);
+    auto pAuthForm    = m_authModule.ui->widget();
+    m_pagesStack->addWidget(pAuthForm);
+    m_pagesStack->setCurrentWidget(pAuthForm);
 
-    if (authModule.strategy->authenticate()) {
-        // Authentification accepted
-    }
+    pLayout->addWidget(m_pagesStack);
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     pAuthForm->setMouseTracking(true);
-    pTitleBar->setMouseTracking(true);
 
-    connect(pTitleBar, &TitleBarWidget::beginWindowMove, this, [this](const QPoint& globalPos) {
-        if (!resizing) {
+    connect(m_titleBar, &TitleBarWidget::beginWindowMove, this, [this](const QPoint& globalPos) {
+        if (!m_resizing)
+        {
             m_dragOffset = globalPos - frameGeometry().topLeft();
-            m_moving = true;
+            m_moving     = true;
         }
     });
 
-    connect(pTitleBar, &TitleBarWidget::windowMove, this, [this](const QPoint& globalPos) {
-        if (m_moving && !resizing) {
+    connect(m_titleBar, &TitleBarWidget::windowMove, this, [this](const QPoint& globalPos) {
+        if (m_moving && !m_resizing)
+        {
             move(globalPos - m_dragOffset);
         }
     });
+
+    connect(m_authModule.ui->asQObject(), SIGNAL(goToChatPage()), this, SLOT(onGoToChat()));
+    connect(m_authModule.ui->asQObject(), SIGNAL(goToRegistrationPage()), this, SLOT(onGoToRegistration()));
 }
 
 MainWindow::~MainWindow() {}
 
-MainWindow::ResizeRegion MainWindow::getResizeRegion(const QPoint &pos)
+void MainWindow::onGoToRegistration() { m_pagesStack->setCurrentWidget(m_registrationPage); }
+
+void MainWindow::onGoToChat() { m_pagesStack->setCurrentWidget(m_registrationPage); }
+
+MainWindow::ResizeRegion MainWindow::getResizeRegion(const QPoint& pos)
 {
-    bool left = pos.x() <= RESIZE_MARGIN;
-    bool right = pos.x() >= width() - RESIZE_MARGIN;
-    bool top = pos.y() <= RESIZE_MARGIN;
+    bool left   = pos.x() <= RESIZE_MARGIN;
+    bool right  = pos.x() >= width() - RESIZE_MARGIN;
+    bool top    = pos.y() <= RESIZE_MARGIN;
     bool bottom = pos.y() >= height() - RESIZE_MARGIN;
 
     if (top && left) return TopLeft;
@@ -70,10 +81,10 @@ MainWindow::ResizeRegion MainWindow::getResizeRegion(const QPoint &pos)
     return None;
 }
 
-void MainWindow::updateCursorShape(const QPoint &globalPos)
+void MainWindow::updateCursorShape(const QPoint& globalPos)
 {
-    QPoint localPos = mapFromGlobal(globalPos);
-    const auto region = getResizeRegion(localPos);
+    QPoint     localPos = mapFromGlobal(globalPos);
+    const auto region   = getResizeRegion(localPos);
 
     Qt::CursorShape shape = Qt::ArrowCursor;
 
@@ -103,22 +114,23 @@ void MainWindow::updateCursorShape(const QPoint &globalPos)
             break;
     }
 
-    if (cursor().shape() != shape)
-        setCursor(shape);
+    if (cursor().shape() != shape) setCursor(shape);
 }
 
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
+void MainWindow::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        resizeRegion = getResizeRegion(event->pos());
-        if (resizeRegion != None) {
-            if (window()->windowHandle()) {
-                Qt::Edges edges = resizeRegionToEdges(resizeRegion);
+    if (event->button() == Qt::LeftButton)
+    {
+        m_resizeRegion = getResizeRegion(event->pos());
+        if (m_resizeRegion != None)
+        {
+            if (window()->windowHandle())
+            {
+                Qt::Edges edges = resizeRegionToEdges(m_resizeRegion);
                 window()->windowHandle()->startSystemResize(edges);
             }
 
-            resizing = true;
+            m_resizing = true;
             event->accept();
             return;
         }
@@ -127,46 +139,50 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     QWidget::mousePressEvent(event);
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
+void MainWindow::mouseMoveEvent(QMouseEvent* event)
 {
-    if (event->buttons() & Qt::LeftButton) {
-        // Не сбрасываем курсор во время системного ресайза
+    if (event->buttons() & Qt::LeftButton)
+    {
         return QWidget::mouseMoveEvent(event);
     }
 
     const QRect innerRect = rect().marginsRemoved(QMargins(RESIZE_MARGIN, RESIZE_MARGIN, RESIZE_MARGIN, RESIZE_MARGIN));
-    if (!innerRect.contains(event->pos())) {
+    if (!innerRect.contains(event->pos()))
+    {
         updateCursorShape(mapToGlobal(event->pos()));
-    } else if (cursor().shape() != Qt::ArrowCursor) {
+    }
+    else if (cursor().shape() != Qt::ArrowCursor)
+    {
         setCursor(Qt::ArrowCursor);
     }
 
     QWidget::mouseMoveEvent(event);
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+void MainWindow::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        resizing = false;
-        m_moving = false;
-        resizeRegion = None;
+    if (event->button() == Qt::LeftButton)
+    {
+        m_resizing     = false;
+        m_moving       = false;
+        m_resizeRegion = None;
     }
 
     QWidget::mouseReleaseEvent(event);
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
+void MainWindow::resizeEvent(QResizeEvent* event)
 {
     updateCursorShape(QCursor::pos());
     QWidget::resizeEvent(event);
 }
 
-void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 {
-    if (event->button() != Qt::LeftButton)
-        return;
+    if (event->button() != Qt::LeftButton) return;
 
-    if (getResizeRegion(event->position().toPoint()) == None) {
+    if (getResizeRegion(event->position().toPoint()) == None)
+    {
         isMaximized() ? showNormal() : showMaximized();
     }
 
@@ -175,15 +191,25 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
 Qt::Edges MainWindow::resizeRegionToEdges(ResizeRegion region)
 {
-    switch(region) {
-        case TopLeft: return Qt::TopEdge | Qt::LeftEdge;
-        case TopRight: return Qt::TopEdge | Qt::RightEdge;
-        case BottomLeft: return Qt::BottomEdge | Qt::LeftEdge;
-        case BottomRight: return Qt::BottomEdge | Qt::RightEdge;
-        case Top: return Qt::TopEdge;
-        case Bottom: return Qt::BottomEdge;
-        case Left: return Qt::LeftEdge;
-        case Right: return Qt::RightEdge;
-        default: return Qt::Edges();
+    switch (region)
+    {
+        case TopLeft:
+            return Qt::TopEdge | Qt::LeftEdge;
+        case TopRight:
+            return Qt::TopEdge | Qt::RightEdge;
+        case BottomLeft:
+            return Qt::BottomEdge | Qt::LeftEdge;
+        case BottomRight:
+            return Qt::BottomEdge | Qt::RightEdge;
+        case Top:
+            return Qt::TopEdge;
+        case Bottom:
+            return Qt::BottomEdge;
+        case Left:
+            return Qt::LeftEdge;
+        case Right:
+            return Qt::RightEdge;
+        default:
+            return Qt::Edges();
     }
 }

@@ -8,6 +8,9 @@ set(SOURCE_FILES
     Auth/Ui/LoginPasswordUI.cpp
     Auth/Ui/PhoneNumberUI.cpp
     Auth/Ui/QRCodeUI.cpp
+
+    Chat/Ui/ChatUI.cpp
+    Registration/Ui/RegistrationPage.cpp
 )
     
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
@@ -15,7 +18,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 add_library(${TARGET} STATIC ${SOURCE_FILES})
 
 target_include_directories(${TARGET}
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Auth)
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Auth ${CMAKE_CURRENT_SOURCE_DIR}/Chat ${CMAKE_CURRENT_SOURCE_DIR}/Registration)
        
 target_link_libraries(${TARGET}
     PUBLIC Qt6::Widgets)

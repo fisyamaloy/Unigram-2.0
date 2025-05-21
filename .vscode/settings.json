@@ -94,7 +94,12 @@
         "qmainwindow": "cpp",
         "filesystem": "cpp",
         "qgraphicsdropshadoweffect": "cpp",
-        "qcursor": "cpp"
+        "qcursor": "cpp",
+        "qwindow": "cpp",
+        "qlineedit": "cpp",
+        "qstring": "cpp",
+        "qobject": "cpp",
+        "qresizeevent": "cpp"
     },
 
     "cmake.configureArgs": [

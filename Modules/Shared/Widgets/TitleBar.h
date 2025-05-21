@@ -9,7 +9,8 @@ class QLabel;
 class QPushButton;
 class QLabel;
 
-class TitleBarWidget : public QFrame {
+class TitleBarWidget : public QFrame
+{
     Q_OBJECT
 
 public:
@@ -28,4 +29,4 @@ private:
     QPoint m_dragPosition;
 };
 
-#endif // !TITLE_BAR_H
+#endif  // !TITLE_BAR_H

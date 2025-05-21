@@ -15,7 +15,4 @@ target_link_libraries(${TARGET}
         CustomWidgets
 )
 
-target_include_directories(${TARGET}
-    PUBLIC
-        ${CMAKE_SOURCE_DIR}
-)
+target_include_directories(${TARGET} PUBLIC ${CMAKE_SOURCE_DIR})

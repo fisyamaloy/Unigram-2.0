@@ -1,16 +1,21 @@
 #ifndef QRCODEUI_H
 #define QRCODEUI_H
 
-#include "IAuthUI.h"
 #include <QWidget>
 
-class QRCodeUI : public IAuthUI {
+#include "IAuthUI.h"
+
+class QRCodeUI : public QObject, public IAuthUI
+{
 public:
     QRCodeUI();
-    QWidget* widget() override {
+    QWidget* widget() override
+    {
         // Returns Phone - QR code form
         return nullptr;
     }
+
+    QObject* asQObject() override { return this; }
 };
 
-#endif // QRCODEUI_H
+#endif  // QRCODEUI_H
