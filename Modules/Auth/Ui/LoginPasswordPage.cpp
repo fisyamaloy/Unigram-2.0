@@ -1,12 +1,12 @@
-#include "LoginPasswordUI.h"
+#include "LoginPasswordPage.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLineEdit>
 
-LoginPasswordUI::LoginPasswordUI() {}
+LoginPasswordPage::LoginPasswordPage() {}
 
-QWidget* LoginPasswordUI::widget()
+QWidget* LoginPasswordPage::widget()
 {
     auto pWidget = new QWidget;
     auto pLayout = new QVBoxLayout;
@@ -48,12 +48,12 @@ QWidget* LoginPasswordUI::widget()
 
     pWidget->setLayout(pLayout);
 
-    connect(pLoginButton, &QPushButton::clicked, this, &LoginPasswordUI::goToChatPage);
-    connect(pRegistrationButton, &QPushButton::clicked, this, &LoginPasswordUI::goToRegistrationPage);
+    connect(pLoginButton, &QPushButton::clicked, this, &LoginPasswordPage::goToChatPage);
+    connect(pRegistrationButton, &QPushButton::clicked, this, &LoginPasswordPage::goToRegistrationPage);
 
     return pWidget;
 }
 
-QObject* LoginPasswordUI::asQObject() {
+QObject* LoginPasswordPage::asQObject() {
     return this;
 }

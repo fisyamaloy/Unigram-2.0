@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>styles/dark.qss</file>
+        <file>icons/not_found.png</file>
     </qresource>
 </RCC>

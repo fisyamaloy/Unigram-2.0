@@ -99,7 +99,15 @@
         "qlineedit": "cpp",
         "qstring": "cpp",
         "qobject": "cpp",
-        "qresizeevent": "cpp"
+        "qresizeevent": "cpp",
+        "qsplitter": "cpp",
+        "qhboxlayout": "cpp",
+        "qlistview": "cpp",
+        "qfontmetrics": "cpp",
+        "qpainter": "cpp",
+        "qlabel": "cpp",
+        "qstyle": "cpp",
+        "qmouseevent": "cpp"
     },
 
     "cmake.configureArgs": [

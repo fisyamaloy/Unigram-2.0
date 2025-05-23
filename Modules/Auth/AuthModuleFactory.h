@@ -4,9 +4,9 @@
 
 #include "AuthModule.h"
 #include "Core/AuthFactory.h"
-#include "Ui/LoginPasswordUI.h"
-#include "Ui/PhoneNumberUI.h"
-#include "Ui/QRCodeUI.h"
+#include "Ui/LoginPasswordPage.h"
+#include "Ui/PhoneNumberPage.h"
+#include "Ui/QRCodePage.h"
 
 class AuthModuleFactory
 {
@@ -16,11 +16,11 @@ public:
         switch (type)
         {
             case AuthType::LOGIN_PASSWORD:
-                return {std::make_unique<LoginPasswordAuth>(), std::make_unique<LoginPasswordUI>()};
+                return {std::make_unique<LoginPasswordAuth>(), std::make_unique<LoginPasswordPage>()};
             case AuthType::PHONE:
-                return {std::make_unique<PhoneNumberAuth>(), std::make_unique<PhoneNumberUI>()};
+                return {std::make_unique<PhoneNumberAuth>(), std::make_unique<PhoneNumberPage>()};
             case AuthType::QR:
-                return {std::make_unique<QRCodeAuth>(), std::make_unique<QRCodeUI>()};
+                return {std::make_unique<QRCodeAuth>(), std::make_unique<QRCodePage>()};
         }
         throw std::invalid_argument("Unknown type");
     }

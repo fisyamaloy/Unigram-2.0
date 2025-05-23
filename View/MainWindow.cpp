@@ -9,14 +9,16 @@
 #include "Modules/Auth/AuthModule.h"
 #include "Modules/Auth/AuthModuleFactory.h"
 #include "Modules/Auth/Core/AuthFactory.h"
-#include "Modules/Shared/Widgets/TitleBar.h"
+#include <Modules/Shared/Widgets/TitleBar.h>
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
     m_pagesStack       = new QStackedWidget(this);
-    m_registrationPage = new RegistrationPage(this);
+    m_registrationPage = new RegistrationPage;
+    m_chatPage         = new ChatPage;
 
     m_pagesStack->addWidget(m_registrationPage);
+    m_pagesStack->addWidget(m_chatPage);
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
     setMouseTracking(true);
@@ -24,19 +26,19 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
     auto pLayout = new QVBoxLayout(this);
     pLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_titleBar = new TitleBarWidget(this);
+    m_titleBar = new TitleBarWidget;
     pLayout->addWidget(m_titleBar);
 
     AuthType selected = AuthType::LOGIN_PASSWORD;
     m_authModule      = AuthModuleFactory::create(selected);
     auto pAuthForm    = m_authModule.ui->widget();
     m_pagesStack->addWidget(pAuthForm);
-    m_pagesStack->setCurrentWidget(pAuthForm);
+    //m_pagesStack->setCurrentWidget(pAuthForm);
+    m_pagesStack->setCurrentWidget(m_chatPage);
 
     pLayout->addWidget(m_pagesStack);
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    pAuthForm->setMouseTracking(true);
 
     connect(m_titleBar, &TitleBarWidget::beginWindowMove, this, [this](const QPoint& globalPos) {
         if (!m_resizing)
@@ -55,13 +57,37 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
     connect(m_authModule.ui->asQObject(), SIGNAL(goToChatPage()), this, SLOT(onGoToChat()));
     connect(m_authModule.ui->asQObject(), SIGNAL(goToRegistrationPage()), this, SLOT(onGoToRegistration()));
+
+    pAuthForm->setMouseTracking(true);
+    
+    for (auto* child : m_chatPage->findChildren<QWidget*>()) {
+        child->installEventFilter(this);
+        child->setMouseTracking(true);
+    }
+
+    m_chatPage->installEventFilter(this);
+    m_registrationPage->installEventFilter(this);
+    pAuthForm->installEventFilter(this);
+    m_titleBar->installEventFilter(this);
 }
 
 MainWindow::~MainWindow() {}
 
 void MainWindow::onGoToRegistration() { m_pagesStack->setCurrentWidget(m_registrationPage); }
 
-void MainWindow::onGoToChat() { m_pagesStack->setCurrentWidget(m_registrationPage); }
+void MainWindow::onGoToChat() { m_pagesStack->setCurrentWidget(m_chatPage); }
+
+bool MainWindow::eventFilter(QObject* watched, QEvent* event)
+{
+    if (event->type() == QEvent::MouseMove)
+    {
+        auto mouseEvent = static_cast<QMouseEvent*>(event);
+        this->mouseMoveEvent(mouseEvent);
+        return false;
+    }
+
+    return QWidget::eventFilter(watched, event);
+}
 
 MainWindow::ResizeRegion MainWindow::getResizeRegion(const QPoint& pos)
 {
@@ -83,8 +109,8 @@ MainWindow::ResizeRegion MainWindow::getResizeRegion(const QPoint& pos)
 
 void MainWindow::updateCursorShape(const QPoint& globalPos)
 {
-    QPoint     localPos = mapFromGlobal(globalPos);
-    const auto region   = getResizeRegion(localPos);
+    const QPoint localPos = mapFromGlobal(globalPos);
+    const auto   region   = getResizeRegion(localPos);
 
     Qt::CursorShape shape = Qt::ArrowCursor;
 
@@ -139,8 +165,11 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
     QWidget::mousePressEvent(event);
 }
 
+static int i = 0;
+
 void MainWindow::mouseMoveEvent(QMouseEvent* event)
 {
+    qDebug("MainWindow::mouseMoveEvent %d", i);
     if (event->buttons() & Qt::LeftButton)
     {
         return QWidget::mouseMoveEvent(event);

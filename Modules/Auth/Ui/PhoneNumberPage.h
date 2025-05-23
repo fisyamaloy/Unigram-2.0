@@ -1,14 +1,14 @@
-#ifndef PHONENUMBERUI_H
-#define PHONENUMBERUI_H
+#ifndef PHONENUMBERPAGE_H
+#define PHONENUMBERPAGE_H
 
 #include <QWidget>
 
-#include "IAuthUI.h"
+#include "IAuthPage.h"
 
-class PhoneNumberUI : public QObject, public IAuthUI
+class PhoneNumberPage : public QObject, public IAuthPage
 {
 public:
-    PhoneNumberUI();
+    PhoneNumberPage();
     QWidget* widget() override
     {
         // Returns Phone number form
@@ -18,4 +18,4 @@ public:
     QObject* asQObject() override { return this; }
 };
 
-#endif  // PHONENUMBERUI_H
+#endif  // !PHONENUMBERPAGE_H

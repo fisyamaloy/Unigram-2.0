@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 
 #include <Modules/Auth/AuthModule.h>
+#include <Chat/ChatPage.h>
 #include <Ui/RegistrationPage.h>
 
 #include <QMargins>
@@ -30,6 +31,14 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
+
+private:
+    AuthModule        m_authModule;
+    QStackedWidget*   m_pagesStack       = nullptr;
+    TitleBarWidget*   m_titleBar         = nullptr;
+    RegistrationPage* m_registrationPage = nullptr;
+    ChatPage*         m_chatPage = nullptr;
 
 private:
     constexpr static int RESIZE_MARGIN = 5;
@@ -46,11 +55,6 @@ private:
         BottomLeft,
         BottomRight
     };
-
-    AuthModule        m_authModule;
-    QStackedWidget*   m_pagesStack       = nullptr;
-    TitleBarWidget*   m_titleBar         = nullptr;
-    RegistrationPage* m_registrationPage = nullptr;
 
     bool         m_moving   = false;
     bool         m_resizing = false;

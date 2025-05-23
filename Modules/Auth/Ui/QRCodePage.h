@@ -1,14 +1,14 @@
-#ifndef QRCODEUI_H
-#define QRCODEUI_H
+#ifndef QRCODEPAGE_H
+#define QRCODEPAGE_H
 
 #include <QWidget>
 
-#include "IAuthUI.h"
+#include "IAuthPage.h"
 
-class QRCodeUI : public QObject, public IAuthUI
+class QRCodePage : public QObject, public IAuthPage
 {
 public:
-    QRCodeUI();
+    QRCodePage();
     QWidget* widget() override
     {
         // Returns Phone - QR code form
@@ -18,4 +18,4 @@ public:
     QObject* asQObject() override { return this; }
 };
 
-#endif  // QRCODEUI_H
+#endif  // QRCODEPAGE_H
