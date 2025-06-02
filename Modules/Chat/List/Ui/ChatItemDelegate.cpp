@@ -1,18 +1,26 @@
 #include "ChatItemDelegate.h"
 
-#include "../Core/Models/ChatListModel.h"
-
 #include <QApplication>
-#include <QStyle>
 #include <QPainter>
+#include <QStyle>
+#include <QMouseEvent>
+
+#include "../Core/Models/ChatListModel.h"
 
 void ChatItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     painter->save();
     QRect rect = option.rect;
 
-    QStyle* style = QApplication::style();
-    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
+    QColor backgroundColor;
+    if (option.state & QStyle::State_Selected)
+        backgroundColor = QColor("#3d3d3d");
+    else if (option.state & QStyle::State_MouseOver)
+        backgroundColor = QColor("#2c2f36");
+    else
+        backgroundColor = QColor("#1e1e1e");
+
+    painter->fillRect(rect, backgroundColor);
 
     QColor titleColor    = option.palette.color(QPalette::Text);
     QColor subtitleColor = option.palette.color(QPalette::Mid);

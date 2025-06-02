@@ -12,7 +12,9 @@ set(SOURCE_FILES
     Registration/Ui/RegistrationPage.cpp
     
     Chat/Include/Chat/ChatPage.h
+    Chat/Include/Chat/ChatConversationArea.h
     Chat/ChatPage.cpp
+    Chat/ChatConversationArea.cpp
 
     Chat/List/Core/Models/ChatListItem.h
     Chat/List/Core/Models/ChatListModel.h
@@ -22,6 +24,15 @@ set(SOURCE_FILES
     Chat/List/Ui/ChatItemDelegate.h
     Chat/List/Ui/ChatItemDelegate.cpp
     Chat/List/Ui/ChatListWidget.cpp
+
+    Chat/Messages/Ui/MessageListWidget.h
+    Chat/Messages/Ui/MessageItemDelegate.h
+    Chat/Messages/Ui/MessageListWidget.cpp
+    Chat/Messages/Ui/MessageItemDelegate.cpp
+
+    Chat/Messages/Core/Models/ChatMessage.h
+    Chat/Messages/Core/Models/MessageListModel.h
+    Chat/Messages/Core/Models/MessageListModel.cpp
 )
     
 find_package(Qt6 REQUIRED COMPONENTS Widgets)

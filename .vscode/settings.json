@@ -107,7 +107,10 @@
         "qpainter": "cpp",
         "qlabel": "cpp",
         "qstyle": "cpp",
-        "qmouseevent": "cpp"
+        "qmouseevent": "cpp",
+        "qevent": "cpp",
+        "qlayoutitem": "cpp",
+        "qstyleoption": "cpp"
     },
 
     "cmake.configureArgs": [

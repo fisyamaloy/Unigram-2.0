@@ -60,7 +60,7 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qlineedit
 --------------------------------------------------------------------------- */
 QWidget > QGroupBox > QLineEdit,
 QLineEdit {
-    background-color: #1e1e1e;  /* Очень тёмный фон */
+    background-color: #1e1e1e;
     border: 1px solid #3a3a3a;
     border-radius: 8px;
     padding: 6px 10px;
@@ -69,6 +69,19 @@ QLineEdit {
 }
 
 QLineEdit:focus {
+    border: 1px solid #5a5a5a;
+}
+
+QTextEdit {
+    background-color: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 4px 6px;
+    color: #e0e0e0;
+    font-size: 14px;
+}
+
+QTextEdit:focus {
     border: 1px solid #5a5a5a;
 }
 
@@ -90,4 +103,15 @@ QListView::item:selected {
 QScrollBar:vertical {
     background: transparent;
     width: 8px;
+}
+
+QLabel {
+    font-size: 14px;
+}
+
+MessageWidget {
+    background-color: #2a2d32;
+    color: white;
+    border-radius: 10px;
+    padding: 6px 10px;
 }

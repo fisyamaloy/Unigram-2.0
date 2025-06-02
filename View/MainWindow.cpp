@@ -83,6 +83,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
     {
         auto mouseEvent = static_cast<QMouseEvent*>(event);
         this->mouseMoveEvent(mouseEvent);
+
         return false;
     }
 
